@@ -1,0 +1,136 @@
+{
+  "builders": [
+    {
+    "type": "openstack",
+    "flavor": "m1.small",
+    "tenant_name": "",
+    "image_name": "lims2_xenial",
+    "source_image": "",
+    "security_groups": ["default"],
+    "ssh_username": "ubuntu",
+    "networks": [
+        ""
+       ]
+    }
+  ],
+  "provisioners": [
+    {
+    "type": "file",
+    "source": "lims2_dependencies.json",
+    "destination": "/home/ubuntu/lims2_dependencies.json"
+    },
+    {
+      "scripts" : [
+          "build.sh"
+      ],
+      "type": "shell",
+      "execute_command": "sudo bash '{{.Path}}'"
+    },
+    {
+      "type": "file",
+      "source": "config/lims2_fcgi/fastcgi.yaml",
+      "destination": "/tmp/fastcgi.yaml"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo cp /tmp/fastcgi.yaml /opt/sci/global/conf/lims2/",
+        "rm /tmp/fastcgi.yaml"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "config/fp_reports",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo cp -r /tmp/fp_reports/* /opt/sci/local/report_cache/lims2_cache_fp_report/localhost/",
+        "rm -r /tmp/fp_reports"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo chmod -R 777 /opt/sci/local/"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "config/lims2_fcgi/lims2.conf",
+      "destination": "/tmp/lims2.conf"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo cp /tmp/lims2.conf /opt/sci/global/conf/lims2/",
+        "rm /tmp/lims2.conf"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "config/opt/t87/global",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo cp -r /tmp/global /opt/sci/",
+        "rm -rf /tmp/global"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "config/nfs/team87/farm3_lims2_vms/conf/primers",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo cp -r /tmp/primers /nfs/team87/farm3_lims2_vms/conf/",
+        "rm -rf /tmp/primers"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "config/Password.pm",
+      "destination": "/tmp/Password.pm"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo cp -r /tmp/Password.pm /usr/local/share/perl/5.22.1/Catalyst/Authentication/Credential/Password.pm",
+        "rm -rf /tmp/Password.pm"
+      ]
+    },
+    {
+    "type": "shell",
+    "inline": ["mkdir -p ~/LIMS2-tmp/"]
+    },
+    {
+    "type": "shell",
+    "inline": ["mkdir -p ~/conf/LIMS2-WebApp/"]
+    },
+    {
+    "type": "file",
+    "source": "config/LIMS2-tmp",
+    "destination": "/home/ubuntu/"
+    },
+    {
+    "type": "file",
+    "source": "config/.lims2_local",
+    "destination": "/home/ubuntu/.lims2_local"
+    },
+    {
+    "type": "file",
+    "source": "config/LIMS2-tmp",
+    "destination": "/home/ubuntu/"
+    },
+    {
+    "type": "file",
+    "source": "config/conf/LIMS2-WebApp",
+    "destination": "/home/ubuntu/conf/"
+    }
+  ]
+}
